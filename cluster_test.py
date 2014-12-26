@@ -12,7 +12,7 @@ import pprint
 
 from it.paxoscli import PaxosClient, PaxosError, ids_dic, init_view, request, req_ex
 from it.ngxctl import ngx_start, ngx_stop, ngx_restart
-from it.mcctl import mc_flush
+from it.sto import init_sto
 
 def err_rst( code ):
     return { "err": { "Code": code } }
@@ -74,7 +74,7 @@ def check_test():
 
     for case in cases:
         ngx_restart('1234')
-        mc_flush()
+        init_sto()
 
         mes = case[0]
         out( "" )

@@ -11,7 +11,7 @@ import socket
 
 from it.paxoscli import PaxosClient, PaxosError, ids_dic, init_view, request, req_ex
 from it.ngxctl import ngx_start, ngx_stop, ngx_restart
-from it.mcctl import mc_flush
+from it.sto import init_sto
 
 g1 = ids_dic("1")
 g2 = ids_dic("2")
@@ -191,7 +191,7 @@ def integration_test():
 
     for case in cases:
         ngx_restart('123')
-        mc_flush()
+        init_sto()
 
         mes = case[0]
         out( "" )
@@ -239,7 +239,7 @@ def incr_worker(incr_key, idents, n):
             try:
                 b = req_ex( "get", to_ident, { "key":incr_key } )
 
-                remote_ver, remote_val = b[ 'ver' ], b[ 'val' ]
+                remote_ver, remote_val = b[ 'ver' ], b.get('val')
                 if remote_ver < cur_ver:
                     # unfinished commit might be seen,
                     continue
@@ -252,7 +252,7 @@ def incr_worker(incr_key, idents, n):
                         dd( mes, "unfinished done", "get", b )
 
                     elif remote_val != i:
-                        dd( mes, "error: remote val is: %d, i=%d, ver=%d" % ( remote_val, i, remote_ver ) )
+                        dd( mes, "error: remote val is: {val}, i={i}, ver={ver}".format(val=remote_val, i=i, ver=remote_ver) )
                         sys.exit( 1 )
 
 
@@ -320,7 +320,7 @@ def monkey(sess):
 
 def concurrency_test():
     ngx_restart('123')
-    mc_flush()
+    init_sto()
 
     idents = [ x for x in '123' ]
     nthread = 5
