@@ -1,10 +1,11 @@
 #!/bin/bash
 
+to_rm="bundle it srv merge build backup ut *.lua *.py"
 
 ./merge rc \
     && cur_hash=$(git rev-parse HEAD) \
     && parent=refs/heads/master \
-    && git rm -r bundle it srv merge build ut *.lua *.py \
+    && git rm -r $to_rm \
     && echo "/srv/" >> .gitignore \
     && git add .gitignore lib \
     && tree_hash=$(git write-tree) \

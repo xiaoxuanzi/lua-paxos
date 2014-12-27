@@ -1,0 +1,10 @@
+#!/bin/bash
+
+mkdir bkp \
+    && (
+        cd bkp \
+            && git clone --bare .. . \
+            && git remote add bkp git@github.com:drmingdrmer/lua-paxos.git \
+            && git push --all --force bkp
+    ) \
+    && rm -rf bkp
