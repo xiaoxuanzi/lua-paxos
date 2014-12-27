@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 path=$(pwd)
 bs="$(find ./bundle -name "lib" -type d)"
