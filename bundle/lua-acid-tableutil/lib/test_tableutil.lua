@@ -409,3 +409,74 @@ function test_str(t)
 
 
 end
+
+function test_iter(t)
+
+    for ks, v in tableutil.deep_iter({}) do
+        t:err( "should not get any keys" )
+    end
+
+    for ks, v in tableutil.deep_iter({1}) do
+        t:eqdict( {1}, ks )
+        t:eq( 1, v )
+    end
+
+    for ks, v in tableutil.deep_iter({a="x"}) do
+        t:eqdict( {{"a"}, "x"}, {ks, v} )
+    end
+
+    local a = {
+        1, 2, 3,
+        { 1, 2, 3, 4 },
+        a=1,
+        c=100000,
+        d=1,
+        x={
+            1,
+            { 1, 2 },
+            y={
+                a=1,
+                b=2
+            }
+        },
+        ['fjklY*(']={
+            x=1,
+            b=3,
+        },
+        [100]=33333
+    }
+    a.z = a.x
+
+    local r = {
+        { {1}, 1 },
+        { {100}, 33333 },
+        { {2}, 2 },
+        { {3}, 3 },
+        { {4,1}, 1 },
+        { {4,2}, 2 },
+        { {4,3}, 3 },
+        { {4,4}, 4 },
+        { {"a"}, 1 },
+        { {"c"}, 100000 },
+        { {"d"}, 1 },
+        { {"fjklY*(","b"}, 3 },
+        { {"fjklY*(","x"}, 1 },
+        { {"x",1}, 1 },
+        { {"x",2,1}, 1 },
+        { {"x",2,2}, 2 },
+        { {"x","y","a"}, 1 },
+        { {"x","y","b"}, 2 },
+        { {"z",1}, 1 },
+        { {"z",2,1}, 1 },
+        { {"z",2,2}, 2 },
+        { {"z","y","a"}, 1 },
+        { {"z","y","b"}, 2 },
+    }
+
+    local i = 0
+    for ks, v in tableutil.deep_iter(a) do
+        i = i + 1
+        t:eqdict( r[i], {ks, v} )
+    end
+
+end
