@@ -1,0 +1,9 @@
+#!/bin/bash
+
+(
+(
+cd dep/libluafs \
+    && CPATH=$CPATH:/usr/include/lua5.1 make
+) \
+    && cp dep/libluafs/libluafs.so clib/
+)
