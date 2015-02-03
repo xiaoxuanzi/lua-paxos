@@ -3,7 +3,7 @@
 path=$(pwd)
 bs="$(find ./bundle -name "lib" -type d)"
 
-rm -rf ./lib
+rm -rf ./lib/*
 mkdir -p ./lib
 
 for lib in $bs; do

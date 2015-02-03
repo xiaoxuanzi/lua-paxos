@@ -192,7 +192,7 @@ function _M:is_confirmed_dead(paxos, ident, member)
         return false
     end
 
-    paxos:logerr("dead detected:", ident, member)
+    paxos:logerr("dead detected:", ident, cluster_id, member)
 
     local now = paxos.impl:time()
     local dead_time = self:record_dead(cluster_id, ident, now)

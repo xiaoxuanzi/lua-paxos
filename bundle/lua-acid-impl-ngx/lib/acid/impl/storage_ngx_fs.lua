@@ -2,6 +2,8 @@ local _M = {}
 local _meta = { __index=_M }
 
 local json = require( "cjson" )
+local libluafs = require( "libluafs" )
+local strutil = require( "acid.strutil" )
 
 local SP_LEN = 1
 
@@ -74,6 +76,31 @@ local function _write(path, cont)
     return nil, nil, nil
 end
 
+local function _base(path)
+    local elts = strutil.split( path, '/' )
+    elts[ #elts ] = nil
+    local base = table.concat( elts, '/' )
+    return base
+end
+local function _makedir(path)
+
+    if libluafs.is_dir(path) then
+        return nil, nil, nil
+    end
+
+    local _, err, errmes = _makedir(_base(path))
+    if err then
+        return nil, err, errmes
+    end
+
+    local ok = libluafs.makedir(path, 0755)
+    if not ok then
+        return nil, 'StorageError', 'failure makedir: ' .. tostring(path)
+    end
+
+    return nil, nil, nil
+end
+
 function _M:get_path(pobj)
     -- local path = table.concat( { pobj.cluster_id, pobj.ident }, '/' )
 
@@ -115,6 +142,11 @@ end
 function _M:store(pobj)
 
     local path = self:get_path(pobj)
+
+    local _, err, errmes = _makedir( _base( path ) )
+    if err then
+        return nil, err, errmes
+    end
 
     if pobj.record == nil then
         ngx.log(ngx.INFO, "delete: ", path)
