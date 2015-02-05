@@ -21,6 +21,8 @@ http {
     access_log logs/acc-$ident.log accfmt;
 
     lua_package_path  '$$prefix/../../lib/?.lua;;';
+    lua_package_cpath  '$$prefix/../../clib/?.so;;';
+
     lua_shared_dict paxos_lock 10m;
     lua_socket_log_errors off;
     init_worker_by_lua 'local e=require("sample"); e.members_on_this_node={"$ident"}; e.init_cluster_check($enabled)';
