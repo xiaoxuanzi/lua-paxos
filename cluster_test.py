@@ -58,17 +58,17 @@ def check_test():
               (time.sleep, (2,), None),
               (request,('isalive',4,),{"err":{"Code": "NoView"}}),
 
-              # after shut down 1, 4 become a member
-              (ngx_stop, ("1", ), None),
-              (time.sleep, (10,), None),
-              (request,('get_view',2,),{"ver":6,"key":"view","val":[g234]}),
-              (request,('get_view',3,),{"ver":6,"key":"view","val":[g234]}),
-              (request,('get_view',4,),{"ver":6,"key":"view","val":[g234]}),
+              # # after shut down 1, 4 become a member
+              # (ngx_stop, ("1", ), None),
+              # (time.sleep, (10,), None),
+              # (request,('get_view',2,),{"ver":6,"key":"view","val":[g234]}),
+              # (request,('get_view',3,),{"ver":6,"key":"view","val":[g234]}),
+              # (request,('get_view',4,),{"ver":6,"key":"view","val":[g234]}),
 
-              (ngx_stop, ("2", ), None),
-              (time.sleep, (10,), None),
-              (request,('get_view',3,),{"ver":10,"key":"view","val":[g234]}),
-              (request,('get_view',4,),{"ver":10,"key":"view","val":[g234]}),
+              # (ngx_stop, ("2", ), None),
+              # (time.sleep, (3,), None),
+              # (request,('get_view',3,),{"ver":10,"key":"view","val":[g234]}),
+              # (request,('get_view',4,),{"ver":10,"key":"view","val":[g234]}),
             ),
     )
 
@@ -94,6 +94,42 @@ def check_test():
 
             out( 'OK: ', )
             out( r.get('status'), r.get('body') )
+
+    # nondeterministic test
+
+    ngx_stop("1")
+    time.sleep(10)
+
+    # after shutting down 1. 4 should become a member
+    for mid in (2, 3, 4):
+        b = request('get_view', mid)['body']
+        assert b['val'] == [g234]
+
+    # after shutting down 2. only 3, 4 is alive.
+    ngx_stop("2")
+    time.sleep(10)
+
+    vers = {'3':0, '4':0}
+    while vers['3'] < 60 and vers['4'] < 60:
+
+        for mid in vers:
+
+            r = request('get_view', mid)
+            b = r['body']
+            _ver = b['ver']
+            assert _ver >= vers[mid], "expect to get a greater version than: " + repr(vers[mid]) + ' but: ' + repr(b)
+            vers[mid] = _ver
+
+            assert '1' not in b['val'][0] or '2' not in b['val'][0]
+            assert '3' in b['val'][0]
+            assert '4' in b['val'][0]
+
+            if len(b['val']) == 2:
+                assert '1' not in b['val'][1] or '2' not in b['val'][1]
+                assert '3' in b['val'][1]
+                assert '4' in b['val'][1]
+
+            time.sleep(1)
 
 
 if __name__ == "__main__":
