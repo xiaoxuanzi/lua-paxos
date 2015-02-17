@@ -36,7 +36,9 @@ local err_to_status = {
 }
 
 function _M.new(opt)
-    local e = {}
+    local e = {
+        api_uri = '/api',
+    }
     setmetatable( e, _meta )
     return e
 end
