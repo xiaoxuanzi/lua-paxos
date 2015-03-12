@@ -151,7 +151,7 @@ function _M:set_resp_log(rst)
 end
 
 function _M:get_addrs(member_id, member)
-    local ipport = strutil.split(member_id, ':')
+    local ipport = strutil.split(member_id.ident, ':')
     local addr = {ipport[1], tonumber(ipport[2])}
     return {addr}, nil, nil
 end
