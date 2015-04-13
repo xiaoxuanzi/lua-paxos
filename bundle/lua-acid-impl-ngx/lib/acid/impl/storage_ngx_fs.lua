@@ -4,6 +4,7 @@ local _meta = { __index=_M }
 local json = require( "cjson" )
 local libluafs = require( "libluafs" )
 local strutil = require( "acid.strutil" )
+local tableutil = require( "acid.tableutil" )
 
 local SP_LEN = 1
 
@@ -151,6 +152,9 @@ function _M:store(pobj)
     if pobj.record == nil then
         ngx.log(ngx.INFO, "delete: ", path)
         os.remove(path)
+        if self.cb_commit then
+            self.cb_commit(nil)
+        end
         return nil, nil, nil
     end
 
@@ -159,7 +163,13 @@ function _M:store(pobj)
     local ver = "1"
     local chksum = _chksum(cont)
 
-    return _write(path, ver .. ' ' .. chksum .. ' ' .. cont )
+    local res, err, errmes = _write(path, ver .. ' ' .. chksum .. ' ' .. cont )
+    if err == nil then
+        if self.cb_commit then
+            self.cb_commit(tableutil.dup(pobj.record.committed, true))
+        end
+    end
+    return res, err, errmes
 end
 
 return _M

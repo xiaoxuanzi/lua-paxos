@@ -10,7 +10,7 @@ import threading
 import socket
 import pprint
 
-from it.paxoscli import PaxosClient, PaxosError, ids_dic, init_view, request, req_ex
+from it.paxoscli import PaxosClient, PaxosError, ids_dic, init_view, request, request_ex
 from it.ngxctl import ngx_start, ngx_stop, ngx_restart
 from it.sto import init_sto
 

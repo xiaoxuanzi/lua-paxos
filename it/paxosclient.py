@@ -1,4 +1,5 @@
 
+import sys
 import json
 import urllib
 
@@ -97,3 +98,16 @@ def request_ex( ip, port, cluster_id, ident, cmd, body=None ):
         raise PaxosError( **e )
 
     return b
+
+if __name__ == "__main__":
+    cmd = sys.argv[1]
+    if cmd == 'init':
+        ip, port, cluster_id, ident = sys.argv[2:6]
+        port = int(port)
+
+        members = sys.argv[6:]
+        members = dict([(x, i+1) for i, x in enumerate(members)])
+
+        init_view(ip, port, cluster_id, ident, members)
+    else:
+        raise

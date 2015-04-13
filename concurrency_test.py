@@ -9,7 +9,7 @@ import random
 import threading
 import socket
 
-from it.paxoscli import PaxosClient, PaxosError, ids_dic, init_view, request, req_ex
+from it.paxoscli import PaxosClient, PaxosError, ids_dic, init_view, request, request_ex
 from it.ngxctl import ngx_start, ngx_stop, ngx_restart
 from it.sto import init_sto
 
@@ -237,7 +237,7 @@ def incr_worker(incr_key, idents, n):
             ]
 
             try:
-                b = req_ex( "get", to_ident, { "key":incr_key } )
+                b = request_ex( "get", to_ident, { "key":incr_key } )
 
                 remote_ver, remote_val = b[ 'ver' ], b.get('val')
                 if remote_ver < cur_ver:
@@ -256,13 +256,13 @@ def incr_worker(incr_key, idents, n):
                         sys.exit( 1 )
 
 
-                b = req_ex("set", to_ident, {"key":incr_key, "ver":cur_ver, "val":i+1})
+                b = request_ex("set", to_ident, {"key":incr_key, "ver":cur_ver, "val":i+1})
                 dd( mes, "ok", "set", b )
 
                 cur_ver = b['ver']
 
 
-                b = req_ex( "read", to_ident, {"ver":b[ 'ver' ]} )
+                b = request_ex( "read", to_ident, {"ver":b[ 'ver' ]} )
 
                 ver = b['ver']
                 vals = [ b['val'].get( x, 0 ) for x in idents ]
