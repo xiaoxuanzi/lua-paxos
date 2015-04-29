@@ -85,14 +85,19 @@ function test_new_no_view(t)
         { committed=nil, rst=nil, err=errors.NoView },
         { committed={ ver=1, val=nil }, rst=nil, err=errors.NoView },
         { committed={ ver=1, val={view={}} }, rst=nil, err=errors.NoView },
-        { committed={ ver=1, val={view={{}}} }, rst=nil, err=errors.NoView },
+        { committed={ ver=1, val={view={{}}} }, rst={}, err=nil },
     }
 
     for i, case in ipairs( cases ) do
         sto.committed = case.committed
 
         local x, err = paxos.proposer.new( args, impl )
-        t:eq( case.rst, x, i..' committed: ' .. tableutil.repr( case.committed ) )
+        print(tableutil.repr(x))
+        if case.rst then
+            t:neq( nil, x, i..' committed: ' .. tableutil.repr( case.committed ) )
+        else
+            t:eq( nil, x, i..' committed: ' .. tableutil.repr( case.committed ) )
+        end
         t:eq( case.err, err )
     end
 
@@ -1063,7 +1068,7 @@ function test_acc_view_err(t)
         { committed=nil, err=errors.NoView },
         { committed={ ver=2, val=nil }, err=errors.NoView },
         { committed={ ver=2, val={} }, err=errors.NoView },
-        { committed={ ver=2, val={view={{}}} }, err=errors.NoView },
+        { committed={ ver=2, val={view={{}}} }, err=errors.AlreadyCommitted },
     }
 
     for i, case in ipairs( cases ) do

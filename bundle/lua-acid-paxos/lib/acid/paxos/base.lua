@@ -66,7 +66,8 @@ function _M.init_view( self )
         end
 
         local v = val.view
-        if v == nil or v[ 1 ] == nil or tableutil.nkeys( v[ 1 ] ) == 0 then
+        -- if v == nil or v[ 1 ] == nil or tableutil.nkeys( v[ 1 ] ) == 0 then
+        if v == nil or v[ 1 ] == nil then
             break
         end
 
